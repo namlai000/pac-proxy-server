@@ -1,0 +1,8 @@
+{
+    "proxy_through": [
+        {
+            "type": "domain",
+            "value": "*steam*"
+        }
+    ]
+}
