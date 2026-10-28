@@ -8,23 +8,26 @@ from urllib.parse import urlparse
 # Configuration — edit these values as needed
 # ──────────────────────────────────────────────
 PAC_SERVER_PORT = int(os.environ.get("PAC_SERVER_PORT", "8080"))
-PROXY_HOST = "127.0.0.1"
-PROXY_PORT = 8000
 
-# Domains/networks that should GO THROUGH the proxy (others are DIRECT)
-PROXY_RULES = []
-
-# Load custom proxy rules from config file if it exists.
+# Load custom proxy rules and settings from config file if it exists.
 # When frozen into an .exe (PyInstaller), look for config.json next to the exe.
 if getattr(sys, "frozen", False):
     BASE_DIR = os.path.dirname(os.path.abspath(sys.executable))
 else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.join(BASE_DIR, "config.json")
+
+PROXY_HOST = "127.0.0.1"
+PROXY_PORT = 8000
+PROXY_RULES = []
+
 if os.path.exists(CONFIG_FILE):
     with open(CONFIG_FILE, "r") as f:
-        custom_rules = json.load(f)
-        PROXY_RULES.extend(custom_rules.get("proxy_through", []))
+        config = json.load(f)
+        PROXY_HOST = config.get("proxy_host", PROXY_HOST)
+        PROXY_PORT = config.get("proxy_port", PROXY_PORT)
+        PROXY_RULES.extend(config.get("proxy_through", []))
+
 
 def generate_pac():
     """Generate the PAC file content dynamically.
